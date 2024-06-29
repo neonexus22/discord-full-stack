@@ -3,12 +3,17 @@ import {
   RedirectToSignIn,
   SignedIn,
   SignedOut,
+  useAuth,
+  useSession,
 } from "@clerk/clerk-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import HomePage from "../pages/home-page";
 import Sidebar from "../components/navigation/sidebar";
 import CreateServerModal from "../components/modals/create-server-modal";
+import { useProfileStore } from "../stores/profileStore";
+import { useMutation } from "@apollo/client";
+import { CREATE_PROFILE } from "../graphql/mutations/create-profile";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -28,6 +33,44 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 };
 
 const RootLayout = () => {
+  const profile = useProfileStore((state) => state.profile);
+  const setProfile = useProfileStore((state) => state.setProfile);
+  const { session } = useSession();
+  const { isSignedIn } = useAuth();
+
+  const [createProfile] = useMutation(CREATE_PROFILE, {});
+
+  useEffect(() => {
+    if (!isSignedIn) setProfile(null);
+  }, [isSignedIn, setProfile]);
+
+  useEffect(() => {
+    const createProfileFn = async () => {
+      if (!session?.user) return;
+      try {
+        await createProfile({
+          variables: {
+            input: {
+              email: session.user?.emailAddresses[0]?.emailAddress,
+              name: session.user?.fullName,
+              imageUrl: session.user?.imageUrl,
+            },
+          },
+          onCompleted: (data) => {
+            setProfile(data.createProfile);
+          },
+          onError: (error) => {
+            console.log("Error creating profile", { error });
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (profile?.id) return;
+    createProfileFn();
+  }, [session?.user, profile?.id]);
+
   return (
     <div>
       <Sidebar />
