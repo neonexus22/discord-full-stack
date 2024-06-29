@@ -15,6 +15,9 @@ import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useState } from "react";
 import styles from "./create-server-modal.module.css";
 import { IconUpload, IconX } from "@tabler/icons-react";
+import { useMutation } from "@apollo/client";
+import { CREATE_SERVER } from "../../graphql/mutations/server/create-server";
+import { useProfileStore } from "../../stores/profileStore";
 
 const CreateServerModal = () => {
   const { isOpen, closeModal } = useModal("CreateServer");
@@ -43,13 +46,42 @@ const CreateServerModal = () => {
     reader.readAsDataURL(files[0]);
   };
 
+  const [createServer, { loading, error: mutationError }] = useMutation(
+    CREATE_SERVER,
+    {}
+  );
+
+  const profileId = useProfileStore((state) => state.profile?.id);
+  const onSubmit = () => {
+    if (!form.validate()) return;
+    createServer({
+      variables: {
+        input: {
+          name: form.values.name,
+          profileId,
+        },
+        file,
+      },
+      onCompleted: () => {
+        setImagePreview(null);
+        setFile(null);
+        form.reset();
+        closeModal();
+      },
+      onError: (error) => {
+        console.log("Error creating server", { error, mutationError });
+      },
+      refetchQueries: ["GetServers"],
+    });
+  };
+
   return (
     <Modal title="Create a server" opened={isOpen} onClose={closeModal}>
       <Text>
         Give your server a personality with a name and an image. You can always
         change it later.
       </Text>
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
           <Flex justify="center" align="center" direction="column">
             {!imagePreview && (
@@ -116,7 +148,7 @@ const CreateServerModal = () => {
             error={form.errors.name}
           />
           <Button
-            disabled={!!form.errors.name}
+            disabled={!!form.errors.name || loading}
             w={"30%"}
             type="submit"
             variant="gradient"

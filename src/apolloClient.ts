@@ -29,6 +29,10 @@ const authLink = setContext(async (_, { headers }) => {
 
 const uploadLink = createUploadLink({
   uri: "http://localhost:3000/graphql",
+  headers: {
+    "x-apollo-operation-name": "CreateServer",
+    "apollo-require-preflight": "true",
+  },
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
