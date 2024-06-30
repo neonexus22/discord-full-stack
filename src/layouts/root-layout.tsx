@@ -14,6 +14,10 @@ import CreateServerModal from "../components/modals/create-server-modal";
 import { useProfileStore } from "../stores/profileStore";
 import { useMutation } from "@apollo/client";
 import { CREATE_PROFILE } from "../graphql/mutations/create-profile";
+import ChannelLayout from "./channel-layout";
+import CreateChannelModal from "../components/modals/create-channel-modal";
+import ChannelPage from "../pages/channel-page";
+import ServerLayout from "./server-layout";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -96,6 +100,30 @@ export default function RoutetLayout() {
               <ProtectedRoute>
                 <CreateServerModal />
                 <HomePage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="servers/:serverId/" element={<ServerLayout />}>
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <CreateChannelModal />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route
+          path="servers/:serverId/channels/:channelType/:channelId"
+          element={<ChannelLayout />}
+        >
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <CreateChannelModal />
+                <ChannelPage />
               </ProtectedRoute>
             }
           />

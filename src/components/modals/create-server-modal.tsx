@@ -68,16 +68,13 @@ const CreateServerModal = () => {
         form.reset();
         closeModal();
       },
-      onError: (error) => {
-        console.log("Error creating server", { error, mutationError });
-      },
       refetchQueries: ["GetServers"],
     });
   };
 
   return (
     <Modal title="Create a server" opened={isOpen} onClose={closeModal}>
-      <Text>
+      <Text c="gray" size={rem(13)}>
         Give your server a personality with a name and an image. You can always
         change it later.
       </Text>
@@ -104,7 +101,7 @@ const CreateServerModal = () => {
                     <IconUpload size="3.2rem" stroke={1.5} />
                   </Dropzone.Idle>
                   <>
-                    <Text size="xl" inline>
+                    <Text size="md" inline>
                       Drop images here or click to select files
                     </Text>
                     <Text size="sm" c="dimmed" inline mt={7}>
@@ -113,6 +110,11 @@ const CreateServerModal = () => {
                   </>
                 </Group>
               </Dropzone>
+            )}
+            {mutationError?.message && !file && (
+              <Text c="red" mt="xs" size={rem(13)}>
+                {mutationError?.message}
+              </Text>
             )}
             {imagePreview && (
               <Flex pos="relative" w={rem(150)} h={rem(150)} mt="md">
@@ -128,14 +130,17 @@ const CreateServerModal = () => {
                     top: 0,
                     right: 10,
                   }}
-                  onClick={() => setImagePreview(null)}
+                  onClick={() => {
+                    setImagePreview(null);
+                    setFile(null);
+                  }}
                 >
                   <IconX color="white" />
                 </Button>
                 <Image
                   src={imagePreview}
-                  w={rem(150)}
-                  h={rem(150)}
+                  width={rem(150)}
+                  height={rem(150)}
                   radius={"50%"}
                 />
               </Flex>
@@ -149,7 +154,7 @@ const CreateServerModal = () => {
           />
           <Button
             disabled={!!form.errors.name || loading}
-            w={"30%"}
+            w={"35%"}
             type="submit"
             variant="gradient"
           >
