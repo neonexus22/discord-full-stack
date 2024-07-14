@@ -15,9 +15,13 @@ import { useProfileStore } from "../stores/profileStore";
 import { useMutation } from "@apollo/client";
 import { CREATE_PROFILE } from "../graphql/mutations/create-profile";
 import ChannelLayout from "./channel-layout";
-import CreateChannelModal from "../components/modals/create-channel-modal";
 import ChannelPage from "../pages/channel-page";
 import ServerLayout from "./server-layout";
+import InviteModal from "../components/modals/server/invite-modal";
+import UpdateServerModal from "../components/modals/server/update-server-modal";
+import CreateChannelModal from "../components/modals/server/create-channel-modal";
+import DeleteChannelModal from "../components/modals/server/channel/delete-channel-modal";
+import DeleteServerModal from "../components/modals/server/delete-server-modal";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -123,6 +127,10 @@ export default function RoutetLayout() {
             element={
               <ProtectedRoute>
                 <CreateChannelModal />
+                <DeleteChannelModal />
+                <UpdateServerModal />
+                <DeleteServerModal />
+                <InviteModal />
                 <ChannelPage />
               </ProtectedRoute>
             }

@@ -34,6 +34,12 @@ export enum ChannelType {
   Video = 'VIDEO'
 }
 
+export type CreateChannelOnServerDto = {
+  name: Scalars['String']['input'];
+  serverId: Scalars['Float']['input'];
+  type: Scalars['String']['input'];
+};
+
 export type CreateProfileDto = {
   email: Scalars['String']['input'];
   imageUrl: Scalars['String']['input'];
@@ -68,8 +74,16 @@ export enum MemberRole {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createChannel: Server;
   createProfile: Profile;
   createServer: Server;
+  updateServer: Server;
+  updateServerWithNewInviteCode: Server;
+};
+
+
+export type MutationCreateChannelArgs = {
+  input: CreateChannelOnServerDto;
 };
 
 
@@ -81,6 +95,17 @@ export type MutationCreateProfileArgs = {
 export type MutationCreateServerArgs = {
   file?: InputMaybe<Scalars['Upload']['input']>;
   input: CreateServerDto;
+};
+
+
+export type MutationUpdateServerArgs = {
+  file?: InputMaybe<Scalars['Upload']['input']>;
+  input: UpdateServerDto;
+};
+
+
+export type MutationUpdateServerWithNewInviteCodeArgs = {
+  serverId: Scalars['Float']['input'];
 };
 
 export type Profile = {
@@ -112,7 +137,7 @@ export type QueryGetServerArgs = {
 
 export type Server = {
   __typename?: 'Server';
-  channels: Array<Channel>;
+  channels?: Maybe<Array<Channel>>;
   id: Scalars['Float']['output'];
   imageUrl: Scalars['String']['output'];
   inviteCode?: Maybe<Scalars['String']['output']>;
@@ -120,4 +145,9 @@ export type Server = {
   name: Scalars['String']['output'];
   profile?: Maybe<Profile>;
   profileId: Scalars['Float']['output'];
+};
+
+export type UpdateServerDto = {
+  name: Scalars['String']['input'];
+  serverId: Scalars['Float']['input'];
 };

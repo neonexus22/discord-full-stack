@@ -12,6 +12,7 @@ import { useGetServers } from "../../hooks/graphql/servers/use-get-servers";
 import NavbarLink from "./navbar-link";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Server } from "../../gql/graphql";
 
 const Sidebar = () => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -21,7 +22,7 @@ const Sidebar = () => {
 
   const { servers } = useGetServers();
 
-  const links = servers?.map((server, index: number) => (
+  const links = servers?.map((server: Server, index: number) => (
     <NavbarLink
       key={server.id}
       onClick={() => {

@@ -38,7 +38,7 @@ export function useServer() {
       (member: Member) => member?.profileId !== profileId
     ) || [];
 
-  const role = dataServer?.getServer?.members?.filter(
+  const role = dataServer?.getServer?.members?.find(
     (member: Member) => member?.profileId === profileId
   )?.role;
 
